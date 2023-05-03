@@ -2,7 +2,7 @@ from io import BufferedIOBase
 from tkinter import *
 from tkinter import ttk
 from countries import *
-
+from tkinter import messagebox
     
 
 class Ventana(Frame):
@@ -71,7 +71,23 @@ class Ventana(Frame):
         pass
     
     def fEliminar(self):
-        pass
+        selected = self.grid.focus()                               
+        clave = self.grid.item(selected,'text')        
+        if clave == '':
+            messagebox.showwarning("Eliminar", 'Debes seleccionar un elemento.')            
+        else:                           
+            valores = self.grid.item(selected,'values')
+            data = str(clave) + ", " + valores[0] + ", " + valores[1]
+            r = messagebox.askquestion("Eliminar", "Deseas eliminar el registro seleccionado?\n" + data)            
+            if r == messagebox.YES:
+                n = self.paises.elimina_pais(clave)
+                if n == 1:
+                    messagebox.showinfo("Eliminar", 'Elemento eliminado correctamente.')
+                    self.limpiaGrid()
+                    self.llenaDatos()
+                else:
+                    messagebox.showwarning("Eliminar", 'No fue posible eliminar el elemento.')
+                
     
     
 
@@ -108,10 +124,12 @@ class Ventana(Frame):
         self.btnGuardar=Button(frame2,text="Guardar", command=self.fGuardar, bg="green", fg="white")
         self.btnGuardar.place(x=10,y=210,width=60, height=30)
         self.btnCancelar=Button(frame2,text="Cancelar", command=self.fCancelar, bg="red", fg="white")
-        self.btnCancelar.place(x=80,y=210,width=60, height=30)        
-        self.grid = ttk.Treeview(self, columns=("col1","col2","col3","col4"))        
-        self.grid.column("#0",width=50)
-        self.grid.column("col1",width=60, anchor=CENTER)
+        self.btnCancelar.place(x=80,y=210,width=60, height=30)         
+        frame3 = Frame(self,bg="yellow" )
+        frame3.place(x=247,y=0,width=420, height=259)                      
+        self.grid = ttk.Treeview(frame3, columns=("col1","col2","col3","col4"))        
+        self.grid.column("#0",width=60)
+        self.grid.column("col1",width=70, anchor=CENTER)
         self.grid.column("col2",width=90, anchor=CENTER)
         self.grid.column("col3",width=90, anchor=CENTER)
         self.grid.column("col4",width=90, anchor=CENTER)        
@@ -119,11 +137,9 @@ class Ventana(Frame):
         self.grid.heading("col1", text="ISO3", anchor=CENTER)
         self.grid.heading("col2", text="Country Name", anchor=CENTER)
         self.grid.heading("col3", text="Capital", anchor=CENTER)
-        self.grid.heading("col4", text="Currency Code", anchor=CENTER)        
-        self.grid.place(x=247,y=0,width=420, height=259)
-        
-        
-        
-        
-        
-        
+        self.grid.heading("col4", text="Currency Code", anchor=CENTER)                
+        self.grid.pack(side=LEFT,fill = Y)        
+        sb = Scrollbar(frame3, orient=VERTICAL)
+        sb.pack(side=RIGHT, fill = Y)
+        self.grid.config(yscrollcommand=sb.set)
+        sb.config(command=self.grid.yview)
