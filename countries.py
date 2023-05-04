@@ -55,4 +55,4 @@ class Countries:
         n=cur.rowcount
         self.cnn.commit()    
         cur.close()
-        return n   
+        return n    
